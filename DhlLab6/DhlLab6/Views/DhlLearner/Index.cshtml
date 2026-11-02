@@ -1,0 +1,77 @@
+@model DhlLab6.Models.LearnerListViewModel
+@{
+    ViewData["Title"] = "Learner List";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+    <h1 class="mb-0">Learner List</h1>
+    <a asp-action="Create" class="btn btn-primary">Create New Learner</a>
+</div>
+
+<nav id="major-filter" class="mb-3" aria-label="Lọc theo ngành">
+    <ul class="nav nav-pills flex-wrap gap-2">
+        <li class="nav-item"><a class="nav-link @(Model.Mid is null ? "active" : "")" href="@Url.Action("Index")" data-mid="">Tất cả ngành</a></li>
+        @foreach (var major in Model.Majors)
+        {
+            <li class="nav-item"><a class="nav-link @(Model.Mid == major.MajorID ? "active" : "")" href="@Url.Action("Index", new { mid = major.MajorID })" data-mid="@major.MajorID">@major.MajorName</a></li>
+        }
+    </ul>
+</nav>
+
+<form id="learnerFilters" class="row g-2 align-items-end mb-3" method="get" asp-action="Index">
+    <input type="hidden" id="mid" name="mid" value="@Model.Mid" />
+    <div class="col-sm-8 col-md-6">
+        <label class="form-label" for="keyword">Tìm người học</label>
+        <input class="form-control" id="keyword" name="keyword" value="@Model.Keyword" placeholder="Nhập tên hoặc họ" />
+    </div>
+    <div class="col-auto"><button class="btn btn-primary" type="submit">Tìm kiếm</button></div>
+    <div class="col-auto"><a asp-action="Index" class="btn btn-outline-secondary">Xóa lọc</a></div>
+</form>
+
+<div id="learner-results" aria-live="polite">
+    @await Html.PartialAsync("_LearnerTable", Model)
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const form = document.getElementById("learnerFilters");
+            const results = document.getElementById("learner-results");
+            const majorFilter = document.getElementById("major-filter");
+            const filterUrl = "@Url.Action("LearnerFilter", "DhlLearner")";
+
+            function loadLearners(pageIndex) {
+                const params = new URLSearchParams(new FormData(form));
+                params.set("pageIndex", pageIndex || "1");
+                results.setAttribute("aria-busy", "true");
+                $.get(`${filterUrl}?${params.toString()}`)
+                    .done(html => {
+                        results.innerHTML = html;
+                        const url = new URL(window.location.href);
+                        for (const key of ["mid", "keyword", "pageIndex"]) url.searchParams.delete(key);
+                        for (const [key, value] of params.entries()) if (value) url.searchParams.set(key, value);
+                        history.replaceState(null, "", url);
+                    })
+                    .fail(() => results.innerHTML = '<div class="alert alert-danger">Không tải được danh sách người học.</div>')
+                    .always(() => results.setAttribute("aria-busy", "false"));
+            }
+
+            form.addEventListener("submit", event => { event.preventDefault(); loadLearners(1); });
+            majorFilter.addEventListener("click", event => {
+                const link = event.target.closest("a[data-mid]");
+                if (!link) return;
+                event.preventDefault();
+                document.getElementById("mid").value = link.dataset.mid;
+                majorFilter.querySelectorAll(".nav-link").forEach(item => item.classList.remove("active"));
+                link.classList.add("active");
+                loadLearners(1);
+            });
+            results.addEventListener("click", event => {
+                const link = event.target.closest("a[data-page]");
+                if (!link) return;
+                event.preventDefault();
+                loadLearners(link.dataset.page);
+            });
+        })();
+    </script>
+}

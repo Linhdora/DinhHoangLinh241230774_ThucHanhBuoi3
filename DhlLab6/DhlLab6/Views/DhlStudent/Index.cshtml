@@ -1,0 +1,82 @@
+@model DhlLab6.Models.StudentListViewModel
+@{
+    ViewData["Title"] = "Student List";
+    var filterUrl = Url.RouteUrl("StudentLearnerFilter");
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+    <h1 class="mb-0">Student List</h1>
+    <a asp-action="Create" class="btn btn-primary">Create New Student</a>
+</div>
+
+<form id="studentFilters" class="row g-2 align-items-end mb-3" method="get" asp-action="Index">
+    <div class="col-sm-4 col-md-3">
+        <label class="form-label" for="mid">Lọc theo ngành</label>
+        <select class="form-select" id="mid" name="mid">
+            <option value="">Tất cả ngành</option>
+            @foreach (var branch in Enum.GetValues<DhlLab6.Models.Branch>())
+            {
+                var selected = Model.Mid == (int)branch;
+                <option value="@((int)branch)" selected="@(selected ? "selected" : null)">@branch</option>
+            }
+        </select>
+    </div>
+    <div class="col-sm-6 col-md-5">
+        <label class="form-label" for="keyword">Tìm theo họ tên</label>
+        <input class="form-control" id="keyword" name="keyword" value="@Model.Keyword" placeholder="Nhập tên sinh viên" />
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Xóa lọc</a>
+    </div>
+</form>
+
+<div id="student-results" aria-live="polite">
+    @await Html.PartialAsync("_StudentTable", Model)
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const form = document.getElementById("studentFilters");
+            const results = document.getElementById("student-results");
+            if (!form || !results) return;
+
+            const filterUrl = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(filterUrl));
+
+            function loadStudents(pageIndex) {
+                const params = new URLSearchParams(new FormData(form));
+                params.set("pageIndex", pageIndex || "1");
+                results.setAttribute("aria-busy", "true");
+                $.get(`${filterUrl}?${params.toString()}`)
+                    .done(html => {
+                        results.innerHTML = html;
+                        const pageUrl = new URL(window.location.href);
+                        for (const key of ["mid", "keyword", "pageIndex"]) pageUrl.searchParams.delete(key);
+                        for (const [key, value] of params.entries()) {
+                            if (value) pageUrl.searchParams.set(key, value);
+                        }
+                        history.replaceState(null, "", pageUrl);
+                    })
+                    .fail(() => {
+                        results.innerHTML = '<div class="alert alert-danger" role="alert">Không tải được danh sách sinh viên.</div>';
+                    })
+                    .always(() => results.setAttribute("aria-busy", "false"));
+            }
+
+            form.addEventListener("submit", event => {
+                event.preventDefault();
+                loadStudents(1);
+            });
+
+            document.getElementById("mid").addEventListener("change", () => loadStudents(1));
+
+            results.addEventListener("click", event => {
+                const link = event.target.closest("a[data-page]");
+                if (!link) return;
+                event.preventDefault();
+                loadStudents(link.dataset.page);
+            });
+        })();
+    </script>
+}

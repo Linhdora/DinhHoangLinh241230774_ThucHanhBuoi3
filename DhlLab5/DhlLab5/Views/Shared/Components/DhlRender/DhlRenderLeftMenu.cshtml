@@ -1,0 +1,11 @@
+@model IEnumerable<DhlLab5.Models.DhlMenuItem>
+
+<nav class="dhl-sidebar-nav" aria-label="Main navigation">
+    <div class="dhl-sidebar-section">Addons</div>
+    @foreach (var item in Model)
+    {
+        <a class="dhl-sidebar-link" href="@item.Link">
+            <span class="dhl-menu-icon" aria-hidden="true">▰</span><span>@item.Name</span>
+        </a>
+    }
+</nav>

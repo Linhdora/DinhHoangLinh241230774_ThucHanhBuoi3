@@ -1,0 +1,47 @@
+@model IReadOnlyList<DhlLab5.Models.DhlStudent>
+@{
+    ViewData["Title"] = "Students";
+}
+
+<a class="btn btn-primary btn-sm dhl-create-button" asp-action="Create">Create Student</a>
+
+@if (ViewData["NoSearchResults"] is true)
+{
+    <div class="alert alert-warning py-2" role="status">Không tìm thấy sinh viên có mã @ViewData["SearchId"].</div>
+}
+
+<div class="table-responsive">
+    <table class="table table-striped dhl-student-table">
+        <thead>
+            <tr>
+                <th scope="col">Mã</th>
+                <th scope="col">Họ tên</th>
+                <th scope="col">Ngày sinh</th>
+                <th scope="col">Ngành</th>
+                <th scope="col">Giới tính</th>
+                <th scope="col">Hệ ĐT</th>
+                <th scope="col">Địa chỉ</th>
+                <th scope="col">Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Count == 0 && ViewData["NoSearchResults"] is not true)
+            {
+                <tr><td colspan="8" class="text-center text-secondary">Chưa có sinh viên nào.</td></tr>
+            }
+            @foreach (var student in Model)
+            {
+                <tr>
+                    <td>@student.Id</td>
+                    <td>@student.FullName</td>
+                    <td>@student.DateOfBirth.ToString("M/d/yyyy h:mm:ss tt", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</td>
+                    <td>@student.Major</td>
+                    <td>@student.Gender</td>
+                    <td>@student.Program</td>
+                    <td>@student.Address</td>
+                    <td>@student.Email</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

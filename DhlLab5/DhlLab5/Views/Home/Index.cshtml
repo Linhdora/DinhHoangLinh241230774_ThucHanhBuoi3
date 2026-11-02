@@ -1,0 +1,38 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<header class="dhl-page-heading">
+    <h1>Dashboard</h1>
+    <p>Welcome to the DhlLab5 management system.</p>
+</header>
+
+<section class="row g-4" aria-label="Dashboard overview">
+    <div class="col-12 col-xl-8">
+        <div class="card dhl-card h-100">
+            <div class="dhl-card-body">
+                <span class="badge text-bg-primary mb-3">Lab 4</span>
+                <h2 class="h4">MVC layout with reusable components</h2>
+                <p class="text-secondary mb-0">This page uses <code>DhlMyLayout</code>. The navigation, sidebar and footer are reusable partial views, and the sidebar menu is rendered by a strongly typed ViewComponent.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-xl-4">
+        <div class="card dhl-card h-100">
+            <div class="dhl-card-body">
+                <h2 class="h6 text-secondary text-uppercase">Layout features</h2>
+                <ul class="mb-0 ps-3">
+                    <li class="mb-2">Reusable Dhl partial views</li>
+                    <li class="mb-2">Strongly typed sidebar menu</li>
+                    <li>Optional view sections</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        document.documentElement.dataset.dhlPageReady = "true";
+    </script>
+}

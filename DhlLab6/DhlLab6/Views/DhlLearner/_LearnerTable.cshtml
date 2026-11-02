@@ -1,0 +1,33 @@
+@model DhlLab6.Models.LearnerListViewModel
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead><tr><th>Mã</th><th>Tên</th><th>Họ</th><th>Ngành</th><th>Ngày nhập học</th><th>Chức năng</th></tr></thead>
+        <tbody>
+        @foreach (var learner in Model.Learners)
+        {
+            <tr>
+                <td>@learner.LearnerID</td><td>@learner.FirstMidName</td><td>@learner.LastName</td>
+                <td>@learner.Major?.MajorName</td><td>@learner.EnrollmentDate.ToString("d")</td>
+                <td class="text-nowrap"><a asp-action="Edit" asp-route-id="@learner.LearnerID">Edit</a> | <a asp-action="Delete" asp-route-id="@learner.LearnerID">Delete</a></td>
+            </tr>
+        }
+        @if (Model.Learners.Count == 0)
+        {
+            <tr><td colspan="6" class="text-center text-secondary">Không có người học phù hợp.</td></tr>
+        }
+        </tbody>
+    </table>
+</div>
+<div class="d-flex justify-content-between align-items-center">
+    <span class="text-secondary">@Model.TotalCount kết quả · Trang @Model.PageNum / @Model.PageCount</span>
+    @if (Model.PageCount > 1)
+    {
+        <nav aria-label="Phân trang"><ul class="pagination mb-0">
+            @for (var pageNumber = 1; pageNumber <= Model.PageCount; pageNumber++)
+            {
+                <li class="page-item @(pageNumber == Model.PageNum ? "active" : "")"><a class="page-link" data-page="@pageNumber" href="@Url.Action("Index", new { mid = Model.Mid, keyword = Model.Keyword, pageIndex = pageNumber })">@pageNumber</a></li>
+            }
+        </ul></nav>
+    }
+</div>

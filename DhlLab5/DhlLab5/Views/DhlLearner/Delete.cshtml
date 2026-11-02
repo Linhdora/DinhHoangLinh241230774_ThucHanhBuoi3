@@ -1,0 +1,22 @@
+@model DhlLab5.Models.DhlLearner
+@{
+    ViewData["Title"] = "Delete Learner";
+}
+
+<h1>Delete Learner</h1>
+<h4>Bạn có chắc chắn muốn xóa người học này?</h4>
+<hr />
+<dl class="row">
+    <dt class="col-sm-3">Tên</dt>
+    <dd class="col-sm-9">@Model.FirstMidName</dd>
+    <dt class="col-sm-3">Họ</dt>
+    <dd class="col-sm-9">@Model.LastName</dd>
+    <dt class="col-sm-3">Ngành</dt>
+    <dd class="col-sm-9">@Model.Major?.MajorName</dd>
+    <dt class="col-sm-3">Ngày nhập học</dt>
+    <dd class="col-sm-9">@Model.EnrollmentDate.ToString("g")</dd>
+</dl>
+<form asp-action="Delete" asp-route-id="@Model.LearnerID" method="post">
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+</form>

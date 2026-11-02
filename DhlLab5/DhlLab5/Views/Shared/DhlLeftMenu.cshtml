@@ -1,0 +1,7 @@
+<aside class="dhl-sidebar" id="dhlSidebar">
+    @await Component.InvokeAsync("DhlRender")
+    <nav class="px-3 py-2" aria-label="School data">
+        <a class="d-block text-decoration-none" asp-controller="DhlLearner" asp-action="Index">Learners</a>
+    </nav>
+    <div class="dhl-sidebar-bottom"><span aria-hidden="true">●</span><span>Signed in</span></div>
+</aside>

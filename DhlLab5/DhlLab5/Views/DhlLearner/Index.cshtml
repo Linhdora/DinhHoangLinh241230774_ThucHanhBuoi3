@@ -1,0 +1,57 @@
+@model IEnumerable<DhlLab5.Models.DhlLearner>
+@{
+    ViewData["Title"] = "Learner List";
+    var selectedMajorId = ViewBag.MajorID as int?;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Learner List</h1>
+    <a asp-action="Create" class="btn btn-primary">Create New Learner</a>
+</div>
+
+@if (TempData["DeleteError"] is string deleteError)
+{
+    <div class="alert alert-warning" role="alert">@deleteError</div>
+}
+
+<div class="mb-3">
+    @await Component.InvokeAsync("DhlMajor", new { selectedMajorId })
+</div>
+<div id="learner-results" aria-live="polite">
+    @await Html.PartialAsync("LearnerTable", Model)
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const filter = document.getElementById("major-filter");
+            const results = document.getElementById("learner-results");
+            if (!filter || !results) return;
+
+            filter.addEventListener("click", async (event) => {
+                const link = event.target.closest("a[data-major-id]");
+                if (!link) return;
+
+                event.preventDefault();
+                filter.querySelectorAll(".nav-link").forEach(item => item.classList.remove("active"));
+                link.classList.add("active");
+                results.setAttribute("aria-busy", "true");
+
+                const url = new URL("@Url.Action("LearnerByMajorID", "DhlLearner")", window.location.origin);
+                const majorId = link.dataset.majorId;
+                if (majorId) url.searchParams.set("id", majorId);
+
+                try {
+                    const response = await fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } });
+                    if (!response.ok) throw new Error("Không tải được danh sách người học.");
+                    results.innerHTML = await response.text();
+                    history.replaceState(null, "", link.href);
+                } catch (error) {
+                    results.innerHTML = `<div class="alert alert-danger" role="alert">${error.message}</div>`;
+                } finally {
+                    results.setAttribute("aria-busy", "false");
+                }
+            });
+        })();
+    </script>
+}

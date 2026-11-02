@@ -1,0 +1,13 @@
+<nav class="dhl-topnav navbar navbar-expand navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand dhl-brand" asp-controller="DhlStudent" asp-action="Index">Management System</a>
+        <button class="btn btn-link btn-sm order-1 order-lg-0 dhl-menu-toggle" type="button" aria-label="Toggle navigation" data-dhl-sidebar-toggle>
+            <span aria-hidden="true">☰</span>
+        </button>
+        <form class="dhl-search ms-auto me-3" role="search" asp-controller="DhlStudent" asp-action="Index" method="get">
+            <input class="form-control" type="number" name="id" min="1" step="1" value="@ViewData["SearchId"]" placeholder="Search by student ID..." aria-label="Search by student ID">
+            <button class="btn btn-primary" type="submit" aria-label="Search by student ID"><span aria-hidden="true">⌕</span></button>
+        </form>
+        <span class="dhl-user-mark" aria-label="User"><span aria-hidden="true">♟</span></span>
+    </div>
+</nav>
